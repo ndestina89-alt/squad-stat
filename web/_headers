@@ -1,0 +1,7 @@
+# Cloudflare Pages response headers. Strict CSP: no inline scripts or styles are used.
+# Add your API origin to connect-src if it is not on workers.dev.
+/*
+  Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://*.workers.dev; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  Permissions-Policy: camera=(), microphone=(), geolocation=()

@@ -1,0 +1,51 @@
+name: backtest
+# Manual on purpose: the tune and holdout windows are explicit inputs and are never guessed.
+# The stored run is the HOLDOUT window evaluated with the setting chosen on the tune window.
+on:
+  workflow_dispatch:
+    inputs:
+      competition:
+        description: "Competition code, e.g. PL"
+        required: true
+      tune_from: { description: "Tune window start (YYYY-MM-DD)", required: true }
+      tune_to: { description: "Tune window end (YYYY-MM-DD)", required: true }
+      holdout_from: { description: "Holdout start (must not be before tune end)", required: true }
+      holdout_to: { description: "Holdout end (YYYY-MM-DD)", required: true }
+
+concurrency:
+  group: squad-stat-db
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Validate inputs
+        env:
+          COMP: ${{ inputs.competition }}
+          D1: ${{ inputs.tune_from }} ${{ inputs.tune_to }} ${{ inputs.holdout_from }} ${{ inputs.holdout_to }}
+        run: |
+          [[ "$COMP" =~ ^[A-Za-z0-9]{2,5}$ ]] || { echo "invalid competition"; exit 2; }
+          for d in $D1; do [[ "$d" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] || { echo "bad date: $d"; exit 2; }; done
+      - name: Tune on the tune window, evaluate on the holdout, store the run
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
+          COMP: ${{ inputs.competition }}
+          TUNE_FROM: ${{ inputs.tune_from }}
+          TUNE_TO: ${{ inputs.tune_to }}
+          HOLD_FROM: ${{ inputs.holdout_from }}
+          HOLD_TO: ${{ inputs.holdout_to }}
+        run: node pipeline/bin/backtest.js --competition "$COMP" --tune-from "$TUNE_FROM" --tune-to "$TUNE_TO" --holdout-from "$HOLD_FROM" --holdout-to "$HOLD_TO"

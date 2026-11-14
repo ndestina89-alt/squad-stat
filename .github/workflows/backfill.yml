@@ -1,0 +1,49 @@
+name: backfill
+# Manual historical backfill from football-data.co.uk CSV. Needed once before the first backtest.
+on:
+  workflow_dispatch:
+    inputs:
+      from:
+        description: "First season start year, e.g. 2021"
+        required: true
+      to:
+        description: "Last season start year (default: current season)"
+        default: ""
+      competitions:
+        description: "Optional comma-separated codes, e.g. PL,PD"
+        default: ""
+
+concurrency:
+  group: squad-stat-db
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Validate inputs
+        env: { FROM: "${{ inputs.from }}", TO: "${{ inputs.to }}", COMPS: "${{ inputs.competitions }}" }
+        run: |
+          [[ "$FROM" =~ ^[0-9]{4}$ ]] || { echo "from must be a 4-digit year"; exit 2; }
+          [[ "$TO" =~ ^([0-9]{4})?$ ]] || { echo "to must be a 4-digit year or empty"; exit 2; }
+          [[ "$COMPS" =~ ^[A-Za-z0-9,]*$ ]] || { echo "invalid competitions"; exit 2; }
+      - name: Backfill
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
+          FROM: ${{ inputs.from }}
+          TO: ${{ inputs.to }}
+          COMPS: ${{ inputs.competitions }}
+        run: node pipeline/bin/ingest.js csv --from "$FROM" ${TO:+--to "$TO"} ${COMPS:+--competitions "$COMPS"}

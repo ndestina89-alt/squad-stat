@@ -1,0 +1,20 @@
+# Worker = read-only API. Heavy work (ingest, fit, backtest) runs in GitHub Actions,
+# because the Workers Free plan allows only 10 ms CPU per invocation.
+name = "squad-stat-api"
+main = "worker/src/index.js"
+compatibility_date = "2026-11-01"
+
+[vars]
+# Provider data older than this is reported as stale by /api/health.
+STALE_AFTER_HOURS = "6"
+# The model job is considered overdue after this many hours without a success (used by the data endpoints).
+MODEL_STALE_AFTER_HOURS = "36"
+# Public read-only data; narrow this to your Pages origin once it exists.
+ALLOWED_ORIGIN = "*"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "squad-stat"
+# REPLACE after running: npx wrangler d1 create squad-stat
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migrations"

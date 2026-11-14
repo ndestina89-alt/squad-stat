@@ -1,0 +1,31 @@
+name: watchdog
+# Fails (and so emails the repository owner through GitHub's normal failure notifications) when /api/health is not "ok".
+# Needs the repository variable API_BASE_URL, e.g. https://squad-stat-api.YOUR-SUBDOMAIN.workers.dev
+on:
+  schedule:
+    - cron: "29 */3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  health:
+    if: github.event_name == 'workflow_dispatch' || vars.PIPELINE_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check /api/health
+        env:
+          API: ${{ vars.API_BASE_URL }}
+        run: |
+          [[ "$API" =~ ^https://[A-Za-z0-9.-]+(:[0-9]+)?$ ]] || { echo "API_BASE_URL variable is missing or not a plain https origin"; exit 2; }
+          code=$(curl -sS --max-time 20 --retry 2 -o health.json -w '%{http_code}' "$API/api/health") || { echo "API unreachable"; exit 1; }
+          cat health.json; echo
+          [ "$code" = "200" ] || { echo "health returned HTTP $code"; exit 1; }
+          status=$(jq -r '.status' health.json)
+          [ "$status" = "ok" ] || { echo "health status is '$status'"; exit 1; }

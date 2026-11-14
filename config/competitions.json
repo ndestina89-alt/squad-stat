@@ -1,0 +1,10 @@
+[
+  { "code": "PL",  "name": "Premier League", "country": "England", "fdOrgCode": "PL",  "csvDiv": "E0",  "enabled": true },
+  { "code": "PD",  "name": "La Liga",        "country": "Spain",   "fdOrgCode": "PD",  "csvDiv": "SP1", "enabled": true },
+  { "code": "SA",  "name": "Serie A",        "country": "Italy",   "fdOrgCode": "SA",  "csvDiv": "I1",  "enabled": true },
+  { "code": "BL1", "name": "Bundesliga",     "country": "Germany", "fdOrgCode": "BL1", "csvDiv": "D1",  "enabled": true },
+  { "code": "FL1", "name": "Ligue 1",        "country": "France",  "fdOrgCode": "FL1", "csvDiv": "F1",  "enabled": true },
+  { "code": "CL",  "name": "UEFA Champions League", "country": null, "fdOrgCode": "CL", "csvDiv": null, "enabled": true },
+  { "code": "EL",  "name": "UEFA Europa League",    "country": null, "fdOrgCode": "EL", "csvDiv": null, "enabled": false,
+    "note": "Not in the football-data.org free-tier list (third-party summary) and no verified free source. Disabled until data is confirmed." }
+]

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#0f141b">
+  <title>Squad Stat</title>
+  <meta name="description" content="Peluang pra-pertandingan sepak bola dari model Dixon-Coles, dengan evaluasi walk-forward yang terbuka.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip" href="#main">Lewati ke konten</a>
+  <header class="bar">
+    <a class="brand" href="#/" aria-label="Squad Stat, beranda">
+      <svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><rect x="1.5" y="5.5" width="29" height="21" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><line x1="16" y1="5.5" x2="16" y2="26.5" stroke="currentColor" stroke-width="1.6"/><circle cx="16" cy="16" r="4.5" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="16" cy="16" r="1.4" fill="var(--accent)"/></svg>
+      <span class="word">Squad Stat</span>
+    </a>
+    <nav aria-label="Utama" id="nav">
+      <a href="#/" data-nav="matches">Pertandingan</a>
+      <a href="#/ratings" data-nav="ratings">Rating tim</a>
+      <a href="#/evaluation" data-nav="evaluation">Evaluasi model</a>
+    </nav>
+  </header>
+  <div id="strip"></div>
+  <main id="main" tabindex="-1">
+    <form class="filters" id="filters" aria-label="Filter">
+      <label>Kompetisi<select id="f-comp" name="c"><option value="">Semua</option></select></label>
+      <fieldset class="seg" id="f-status-wrap"><legend class="sr">Jenis laga</legend>
+        <label><input type="radio" name="s" value="scheduled" checked><span>Mendatang</span></label>
+        <label><input type="radio" name="s" value="finished"><span>Hasil</span></label>
+      </fieldset>
+      <label id="f-from-wrap">Dari<input type="date" id="f-from" name="from"></label>
+      <label id="f-to-wrap">Sampai<input type="date" id="f-to" name="to"></label>
+    </form>
+    <div id="view" aria-live="polite"></div>
+  </main>
+  <dialog id="dlg" aria-labelledby="dlg-title">
+    <button type="button" class="close" data-close aria-label="Tutup detail">Tutup</button>
+    <div id="dlg-body"></div>
+  </dialog>
+  <footer class="foot">
+    <p>Peluang berasal dari model statistik dan bukan jaminan hasil. Bukan saran taruhan. Data pertandingan dari football-data.org dan football-data.co.uk (lisensi penggunaan publik belum diverifikasi).</p>
+  </footer>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

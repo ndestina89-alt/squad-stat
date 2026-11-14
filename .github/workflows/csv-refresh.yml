@@ -1,0 +1,38 @@
+name: csv-refresh
+# Weekly refresh of the current season from football-data.co.uk (results plus shots/corners/cards).
+# Team names that are not mapped yet are skipped and listed by `node pipeline/bin/ingest.js unmapped`.
+on:
+  schedule:
+    - cron: "43 3 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: squad-stat-db
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  csv:
+    if: github.event_name == 'workflow_dispatch' || vars.PIPELINE_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Refresh current season
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
+        run: |
+          # A season starts in July or later: 2026-11 belongs to season 2026, 2026-03 to season 2025.
+          y=$(date -u +%Y); m=$(date -u +%-m)
+          season=$(( m >= 7 ? y : y - 1 ))
+          node pipeline/bin/ingest.js csv --from "$season" --to "$season"

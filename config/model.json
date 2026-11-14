@@ -1,0 +1,11 @@
+{
+  "_note": "Defaults are NOT tuned. Replace halfLifeDays/ridge with the values chosen by a real walk-forward backtest (pipeline/bin/backtest.js) on real data, and quote the HOLDOUT metrics.",
+  "halfLifeDays": 365,
+  "ridge": 1.0,
+  "minTrainMatches": 30,
+  "predictionHorizonDays": 14,
+  "tuningGrid": {
+    "halfLifeDays": [90, 180, 365, 730, 1460],
+    "ridge": [0.1, 0.5, 1, 2, 5]
+  }
+}

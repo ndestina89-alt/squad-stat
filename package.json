@@ -1,0 +1,13 @@
+{
+  "name": "squad-stat",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Squad Stat: football pre-match prediction. GitHub Actions computes, Cloudflare D1 stores, a Worker serves read-only data.",
+  "scripts": {
+    "test": "node --disable-warning=ExperimentalWarning --test \"test/**/*.test.js\""
+  },
+  "engines": {
+    "node": ">=22.5"
+  }
+}
