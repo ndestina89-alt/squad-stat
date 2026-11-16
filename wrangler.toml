@@ -14,7 +14,7 @@ ALLOWED_ORIGIN = "*"
 
 [[d1_databases]]
 binding = "DB"
-database_name = "squad-stat"
+database_name = "squad-stat-db"
 # REPLACE after running: npx wrangler d1 create squad-stat
-database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "3991ca12-9b49-4751-ab1b-98dd11810a19"
 migrations_dir = "migrations"
