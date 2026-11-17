@@ -10,7 +10,7 @@ STALE_AFTER_HOURS = "6"
 # The model job is considered overdue after this many hours without a success (used by the data endpoints).
 MODEL_STALE_AFTER_HOURS = "36"
 # Public read-only data; narrow this to your Pages origin once it exists.
-ALLOWED_ORIGIN = "*"
+ALLOWED_ORIGIN = "https://squad-stat.pages.dev"
 
 [[d1_databases]]
 binding = "DB"
