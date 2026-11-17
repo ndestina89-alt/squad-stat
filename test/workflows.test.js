@@ -119,7 +119,10 @@ test('manual input validation steps exist for every workflow that takes inputs',
   }
 });
 
-test('placeholders that deploy guards look for are really still in the repository defaults', () => {
-  assert.match(readFileSync(new URL('../wrangler.toml', import.meta.url), 'utf8'), /00000000-0000-0000-0000-000000000000/);
-  assert.match(readFileSync(new URL('../web/config.js', import.meta.url), 'utf8'), /API_BASE = null/);
+test('production config values are set in wrangler.toml and web/config.js', () => {
+  const wrangler = readFileSync(new URL('../wrangler.toml', import.meta.url), 'utf8');
+  const webConfig = readFileSync(new URL('../web/config.js', import.meta.url), 'utf8');
+  assert.match(wrangler, /database_id = "[0-9a-f-]{36}"/);
+  assert.ok(!wrangler.includes('00000000-0000-0000-0000-000000000000'));
+  assert.ok(!/API_BASE\s*=\s*null/.test(webConfig));
 });
