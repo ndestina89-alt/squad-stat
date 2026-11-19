@@ -50,13 +50,15 @@ export function staleAfterMs(env) {
  * 'degraded' if the latest attempts are failing but data is still fresh, otherwise 'ok'.
  */
 export async function buildHealth(env, nowMs) {
-  const limit = staleAfterMs(env);
+  const primaryLimit = staleAfterMs(env);
+  const historicalLimit = 48 * 3600 * 1000;
   const [{ results: providerRows }, { results: jobRows }] = await Promise.all([
     env.DB.prepare(HEALTH_PROVIDERS_SQL).all(),
     env.DB.prepare(LATEST_JOBS_SQL).all(),
   ]);
 
   const providers = providerRows.map((r) => {
+    const limit = r.role === 'historical' ? historicalLimit : primaryLimit;
     const ageMs = r.last_success_at ? nowMs - Date.parse(r.last_success_at) : null;
     return {
       provider: r.provider,
@@ -77,7 +79,7 @@ export async function buildHealth(env, nowMs) {
   return {
     status,
     now: new Date(nowMs).toISOString().replace(/\.\d{3}Z$/, 'Z'),
-    stale_after_hours: limit / 3600000,
+    stale_after_hours: primaryLimit / 3600000,
     providers,
     latest_jobs: jobRows,
   };
