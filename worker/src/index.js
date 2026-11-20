@@ -51,7 +51,7 @@ export function staleAfterMs(env) {
  */
 export async function buildHealth(env, nowMs) {
   const primaryLimit = staleAfterMs(env);
-  const historicalLimit = 48 * 3600 * 1000;
+  const historicalLimit = 180 * 3600 * 1000;
   const [{ results: providerRows }, { results: jobRows }] = await Promise.all([
     env.DB.prepare(HEALTH_PROVIDERS_SQL).all(),
     env.DB.prepare(LATEST_JOBS_SQL).all(),
